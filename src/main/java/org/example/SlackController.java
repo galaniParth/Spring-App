@@ -3,13 +3,12 @@ package org.example;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 public class SlackController {
 
     private final SlackBotServices slackBotService;
-
+    private static final String DEFAULT_CHANNEL_ID = "C05QDTGAP8Q";
 
     @Autowired
     public SlackController(SlackBotServices slackBotService) {
@@ -17,13 +16,34 @@ public class SlackController {
     }
 
     @PostMapping("/slack/send-message")
-    public String sendMessage(@RequestBody MessageRequest messageRequest) {
-        List<String> targets = messageRequest.getTargets();
-        String messageText = "this is bot";
+    public String sendMessage( MessageRequest messageRequest) {
+        String channel = (messageRequest.getChannel() != null) ? messageRequest.getChannel() : DEFAULT_CHANNEL_ID;
+        String messageText = "this is bot with url:<https://github.com/parthGalani/Spring-App>";
 
-        slackBotService.sendMessage(String.valueOf(targets), messageText);
+        slackBotService.sendMessage(channel, messageText);
 
         return "Messages sent!";
     }
+    public static class MessageRequest {
+        private String channel;
+        private String text;
 
+        // Getters and setters
+
+        public String getChannel() {
+            return channel;
+        }
+
+        public void setChannel(String channel) {
+            this.channel = channel;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+    }
 }
